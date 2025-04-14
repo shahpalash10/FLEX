@@ -266,7 +266,7 @@ export default function Home() {
                         ))}
                       </div>
                     )}
-                  </div>
+        </div>
                   
                   <div ref={destinationRef} className="relative cyber-input-group pl-3">
                     <label htmlFor="destination" className="block text-xs text-teal-400 uppercase tracking-wider mb-1 ml-1">Destination</label>

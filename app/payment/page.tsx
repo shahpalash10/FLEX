@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -44,7 +44,8 @@ const PAYMENT_METHODS = [
   }
 ];
 
-export default function Payment() {
+// Client component that uses useSearchParams
+function PaymentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -253,36 +254,47 @@ export default function Payment() {
           </div>
         </div>
         
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-sm">
-            <span className="text-teal-300/70">Vehicle</span>
-            <p className="font-medium">Toyota Innova • KA 01 AJ 1234</p>
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="text-center">
+            <div className="text-teal-300/70 text-sm mb-1">Car</div>
+            <div>Honda City</div>
+            <div className="text-teal-300/70">White</div>
           </div>
-          <div className="text-sm text-right">
-            <span className="text-teal-300/70">ETA</span>
-            <p className="font-medium">3 mins</p>
+          <div className="text-center">
+            <div className="text-teal-300/70 text-sm mb-1">Plate</div>
+            <div>TN 01 AB 1234</div>
+          </div>
+          <div className="text-center">
+            <div className="text-teal-300/70 text-sm mb-1">ETA</div>
+            <div>3 min</div>
           </div>
         </div>
         
-        <div className="rounded-lg overflow-hidden h-2 bg-gray-700 mb-2">
-          <div className="h-full bg-gradient-to-r from-teal-500 to-purple-500" style={{ width: "30%" }}></div>
-        </div>
-        <div className="flex justify-between text-xs text-teal-300/70">
-          <span>Driver is on the way</span>
-          <span>Arriving at pickup</span>
+        <div className="grid grid-cols-2 gap-4">
+          <button className="btn-secondary flex items-center justify-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+            <span>Call Driver</span>
+          </button>
+          <button className="btn-secondary flex items-center justify-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+            <span>Message</span>
+          </button>
         </div>
       </div>
       
       <button 
-        className="btn-primary w-full py-3 mb-3"
+        className="btn-primary w-full py-3"
         onClick={viewRideStatus}
       >
-        View Ride Status
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+        </svg>
+        Track Your Ride
       </button>
-      
-      <Link href="/rides" className="text-teal-400 hover:text-teal-300 text-sm">
-        Book another ride
-      </Link>
     </div>
   );
 
@@ -302,6 +314,13 @@ export default function Payment() {
                 <span className="text-teal-400 text-2xl font-bold neon-text tracking-wider">FLEX</span>
               </Link>
             </div>
+            <div className="md:hidden">
+              <button className="p-2 text-teal-400 focus:outline-none" aria-label="Toggle mobile menu">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
             <div className="hidden md:flex items-center space-x-6">
               <Link href="/trip-planner" className="nav-link">
                 Plan Route
@@ -315,51 +334,58 @@ export default function Payment() {
               <Link href="/bookings" className="nav-link">
                 My Rides
               </Link>
-              <button className="btn-primary">
-                <span className="relative z-10">Connect</span>
-              </button>
+              <Link href="/profile" className="btn-primary">
+                <span className="relative z-10">Profile</span>
+              </Link>
             </div>
           </div>
         </nav>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-grow py-12">
-        <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="cyber-card">
-            {step === 1 && renderPaymentMethodSelection()}
-            {step === 2 && renderPaymentProcessing()}
-            {step === 3 && renderPaymentSuccess()}
-          </div>
+      <main className="flex-grow py-8">
+        <div className="max-w-lg mx-auto px-4">
+          {step === 1 && renderPaymentMethodSelection()}
+          {step === 2 && renderPaymentProcessing()}
+          {step === 3 && renderPaymentSuccess()}
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="py-10 relative overflow-hidden">
-        <div className="absolute bottom-0 right-0 w-full h-20 bg-gradient-to-t from-teal-900/20 to-transparent"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <footer className="bg-gray-900 py-6 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-6 md:mb-0 flex items-center">
-              <div className="h-8 w-8 bg-gradient-to-br from-teal-500 to-purple-600 rounded-md flex items-center justify-center mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <span className="text-teal-400 text-xl font-bold neon-text">FLEX</span>
+            <div className="mb-4 md:mb-0">
+              <span className="text-lg font-semibold text-teal-500">FLEX Transit</span>
+              <p className="text-sm text-teal-300/70">Your local transportation solution</p>
             </div>
-            <div className="flex flex-wrap justify-center space-x-6">
-              <a href="#" className="text-teal-300/70 hover:text-teal-300 text-sm">About</a>
-              <a href="#" className="text-teal-300/70 hover:text-teal-300 text-sm">Careers</a>
-              <a href="#" className="text-teal-300/70 hover:text-teal-300 text-sm">Privacy</a>
-              <a href="#" className="text-teal-300/70 hover:text-teal-300 text-sm">Terms</a>
-              <a href="#" className="text-teal-300/70 hover:text-teal-300 text-sm">Support</a>
+            <div className="flex space-x-4">
+              <a href="#" className="text-teal-300/70 hover:text-teal-400">About</a>
+              <a href="#" className="text-teal-300/70 hover:text-teal-400">Contact</a>
+              <a href="#" className="text-teal-300/70 hover:text-teal-400">Privacy</a>
+              <a href="#" className="text-teal-300/70 hover:text-teal-400">Terms</a>
             </div>
-          </div>
-          <div className="mt-8 text-center">
-            <p className="text-teal-400/50 text-sm">&copy; 2023 FLEX Transit Technologies. All rights reserved.</p>
           </div>
         </div>
       </footer>
     </div>
+  );
+}
+
+// Loading fallback for Suspense
+function PaymentLoading() {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+      <p className="ml-2 text-teal-500">Loading payment page...</p>
+    </div>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function Payment() {
+  return (
+    <Suspense fallback={<PaymentLoading />}>
+      <PaymentContent />
+    </Suspense>
   );
 } 

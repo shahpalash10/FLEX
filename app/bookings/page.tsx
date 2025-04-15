@@ -1,3 +1,4 @@
+import PageTransition from "@/components/PageTransition";
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -116,7 +117,8 @@ export default function Bookings() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <PageTransition>
+      <div className="min-h-screen flex flex-col">
       {/* Navigation Bar */}
       <header className="bg-black/30 backdrop-blur-md border-b border-white/10">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

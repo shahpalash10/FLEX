@@ -1,3 +1,4 @@
+import PageTransition from "@/components/PageTransition";
 "use client";
 
 import { useState, useEffect } from "react";
@@ -68,7 +69,8 @@ export default function TransportMap() {
   }, [isSimulating, simulationSpeed]);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <PageTransition>
+      <div className="min-h-screen flex flex-col">
       {/* Navigation Bar */}
       <Navbar activePage="transport-map" />
 

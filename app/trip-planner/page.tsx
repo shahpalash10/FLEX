@@ -1,3 +1,4 @@
+import PageTransition from "@/components/PageTransition";
 "use client";
 
 import { useState, useEffect, useRef, Suspense } from "react";
@@ -166,7 +167,8 @@ function TripPlannerContent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <PageTransition>
+      <div className="min-h-screen flex flex-col">
       {/* Navigation Bar */}
       <Navbar activePage="trip-planner" />
 

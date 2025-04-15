@@ -1,3 +1,4 @@
+import PageTransition from "@/components/PageTransition";
 "use client";
 
 import React, { useState } from "react";
@@ -32,7 +33,8 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <PageTransition>
+      <div className="min-h-screen flex flex-col">
       {/* Navigation Bar */}
       <Navbar activePage="profile" />
 

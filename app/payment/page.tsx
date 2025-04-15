@@ -1,7 +1,7 @@
-import PageTransition from "@/components/PageTransition";
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import PageTransition from "../../components/PageTransition";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "../../components/Navbar";
@@ -303,35 +303,36 @@ function PaymentContent() {
   return (
     <PageTransition>
       <div className="min-h-screen flex flex-col">
-      {/* Navigation Bar */}
-      <Navbar />
+        {/* Navigation Bar */}
+        <Navbar />
 
-      <main className="flex-grow py-8">
-        <div className="max-w-lg mx-auto px-4">
-          {step === 1 && renderPaymentMethodSelection()}
-          {step === 2 && renderPaymentProcessing()}
-          {step === 3 && renderPaymentSuccess()}
-        </div>
-      </main>
+        <main className="flex-grow py-8">
+          <div className="max-w-lg mx-auto px-4">
+            {step === 1 && renderPaymentMethodSelection()}
+            {step === 2 && renderPaymentProcessing()}
+            {step === 3 && renderPaymentSuccess()}
+          </div>
+        </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 py-6 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <span className="text-lg font-semibold text-teal-500">FLEX Transit</span>
-              <p className="text-sm text-teal-300/70">Your local transportation solution</p>
-            </div>
-            <div className="flex space-x-4">
-              <a href="#" className="text-teal-300/70 hover:text-teal-400">About</a>
-              <a href="#" className="text-teal-300/70 hover:text-teal-400">Contact</a>
-              <a href="#" className="text-teal-300/70 hover:text-teal-400">Privacy</a>
-              <a href="#" className="text-teal-300/70 hover:text-teal-400">Terms</a>
+        {/* Footer */}
+        <footer className="bg-gray-900 py-6 mt-auto">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="mb-4 md:mb-0">
+                <span className="text-lg font-semibold text-teal-500">FLEX Transit</span>
+                <p className="text-sm text-teal-300/70">Your local transportation solution</p>
+              </div>
+              <div className="flex space-x-4">
+                <a href="#" className="text-teal-300/70 hover:text-teal-400">About</a>
+                <a href="#" className="text-teal-300/70 hover:text-teal-400">Contact</a>
+                <a href="#" className="text-teal-300/70 hover:text-teal-400">Privacy</a>
+                <a href="#" className="text-teal-300/70 hover:text-teal-400">Terms</a>
+              </div>
             </div>
           </div>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
+    </PageTransition>
   );
 }
 

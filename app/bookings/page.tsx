@@ -1,8 +1,9 @@
-import PageTransition from "@/components/PageTransition";
 "use client";
 
+import PageTransition from "../../components/PageTransition";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Navbar from "../../components/Navbar";
 
 // Mock data for bookings
 const MOCK_BOOKINGS = [
@@ -312,6 +313,7 @@ export default function Bookings() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </PageTransition>
   );
 } 

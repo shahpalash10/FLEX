@@ -1,6 +1,6 @@
-import PageTransition from "@/components/PageTransition";
 "use client";
 
+import PageTransition from "../../components/PageTransition";
 import React, { useState } from "react";
 import Link from "next/link";
 import Navbar from "../../components/Navbar";
@@ -413,5 +413,6 @@ export default function Profile() {
         </div>
       </footer>
     </div>
+    </PageTransition>
   );
 } 

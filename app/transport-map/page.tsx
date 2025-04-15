@@ -1,7 +1,7 @@
-import PageTransition from "@/components/PageTransition";
 "use client";
 
-import { useState, useEffect } from "react";
+import PageTransition from "../../components/PageTransition";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import Navbar from "../../components/Navbar";
@@ -25,7 +25,7 @@ const TRANSPORT_STOPS = [
 ];
 
 // Dynamically import the Map component to avoid SSR issues with Leaflet
-const MapComponent = dynamic(() => import("../../components/MapComponent"), {
+const MapComponentDynamic = dynamic(() => import("../../components/MapComponent"), {
   ssr: false,
   loading: () => (
     <div className="h-[600px] w-full bg-gray-200 dark:bg-gray-700 animate-pulse flex items-center justify-center">
@@ -248,7 +248,7 @@ export default function TransportMap() {
             {/* Map and Vehicle Details */}
             <div className="lg:col-span-3">
               <div className="h-[500px] w-full overflow-hidden rounded-lg shadow-md mb-6">
-                <MapComponent 
+                <MapComponentDynamic 
                   vehicles={filteredVehicles}
                   stops={TRANSPORT_STOPS}
                   selectedVehicleId={selectedVehicleId}
@@ -367,5 +367,6 @@ export default function TransportMap() {
         </div>
       </footer>
     </div>
+    </PageTransition>
   );
 } 

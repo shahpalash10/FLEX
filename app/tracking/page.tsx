@@ -1,6 +1,6 @@
-import PageTransition from "@/components/PageTransition";
 "use client";
 
+import PageTransition from "../../components/PageTransition";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import dynamic from 'next/dynamic';
@@ -397,5 +397,6 @@ export default function RideTracking() {
         </div>
       </footer>
     </div>
+    </PageTransition>
   );
 } 

@@ -1,6 +1,6 @@
-import PageTransition from "@/components/PageTransition";
 "use client";
 
+import PageTransition from "../../components/PageTransition";
 import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -465,6 +465,7 @@ function TripPlannerContent() {
         </div>
       </footer>
     </div>
+    </PageTransition>
   );
 }
 

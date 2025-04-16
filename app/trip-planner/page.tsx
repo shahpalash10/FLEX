@@ -45,6 +45,7 @@ function TripPlannerContent() {
   const [time, setTime] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   
   // Location suggestion states
   const [originSuggestions, setOriginSuggestions] = useState<string[]>([]);
@@ -57,10 +58,16 @@ function TripPlannerContent() {
   const destinationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Mark that we're on the client
+    setIsClient(true);
+    
     // Get current date and time for the input defaults
     const now = new Date();
-    setDate(now.toISOString().split("T")[0]);
-    setTime(now.toTimeString().substring(0, 5));
+    const formattedDate = now.toISOString().split("T")[0];
+    const formattedTime = now.toTimeString().substring(0, 5);
+    
+    setDate(formattedDate);
+    setTime(formattedTime);
 
     // Get params from URL if present
     const originParam = searchParams.get("origin");
@@ -239,7 +246,7 @@ function TripPlannerContent() {
                   type="date"
                   id="date"
                   className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-800 dark:text-white"
-                  value={date}
+                  value={isClient ? date : ""}
                   onChange={(e) => setDate(e.target.value)}
                 />
               </div>
@@ -251,7 +258,7 @@ function TripPlannerContent() {
                     type="time"
                     id="time"
                     className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-l-md bg-white dark:bg-gray-900 text-gray-800 dark:text-white"
-                    value={time}
+                    value={isClient ? time : ""}
                     onChange={(e) => setTime(e.target.value)}
                   />
                   <button

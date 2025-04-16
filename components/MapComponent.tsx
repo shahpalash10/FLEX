@@ -5,20 +5,6 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-// Fix for the default marker icon in Leaflet with Next.js
-const icon = L.icon({
-  iconUrl: '/marker-icon.png',
-  iconRetinaUrl: '/marker-icon-2x.png',
-  shadowUrl: '/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-// Default icon fallbacks to prevent errors
-L.Marker.prototype.options.icon = icon;
-
 // Types for the transport vehicles and stops
 interface TransportVehicle {
   id: number;
@@ -67,6 +53,29 @@ function MapCenterControl({ selectedVehicle }: { selectedVehicle: TransportVehic
 
 export default function MapComponent({ vehicles, stops, selectedVehicleId, onVehicleSelect }: MapComponentProps) {
   const [selectedVehicle, setSelectedVehicle] = useState<TransportVehicle | null>(null);
+  const [isClient, setIsClient] = useState(false);
+  const [mapIcon, setMapIcon] = useState<L.Icon | null>(null);
+
+  // Initialize Leaflet icon and marker settings on client-side only
+  useEffect(() => {
+    setIsClient(true);
+    
+    // Fix for the default marker icon in Leaflet with Next.js
+    const icon = L.icon({
+      iconUrl: '/marker-icon.png',
+      iconRetinaUrl: '/marker-icon-2x.png',
+      shadowUrl: '/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    // Default icon fallbacks to prevent errors
+    L.Marker.prototype.options.icon = icon;
+    
+    setMapIcon(icon);
+  }, []);
 
   // Update the selected vehicle when the ID changes
   useEffect(() => {
@@ -80,6 +89,8 @@ export default function MapComponent({ vehicles, stops, selectedVehicleId, onVeh
 
   // Get custom icon based on vehicle type
   const getVehicleIcon = (type: string) => {
+    if (!isClient) return undefined;
+    
     return L.divIcon({
       className: "custom-div-icon",
       html: `<div class="bg-${
@@ -94,6 +105,8 @@ export default function MapComponent({ vehicles, stops, selectedVehicleId, onVeh
 
   // Get custom icon for stops
   const getStopIcon = (type: string) => {
+    if (!isClient) return undefined;
+    
     return L.divIcon({
       className: "custom-div-icon",
       html: `<div class="bg-gray-200 dark:bg-gray-700 border-2 border-${
@@ -104,9 +117,18 @@ export default function MapComponent({ vehicles, stops, selectedVehicleId, onVeh
     });
   };
 
+  // Don't render the map on the server
+  if (!isClient) {
+    return (
+      <div className="h-full w-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+        <p className="text-gray-500 dark:text-gray-400">Loading map...</p>
+      </div>
+    );
+  }
+
   return (
     <MapContainer 
-      center={[40.7128, -74.006]} 
+      center={[13.0827, 80.2707]} 
       zoom={13} 
       style={{ height: '100%', width: '100%' }}
       zoomControl={false}
@@ -170,7 +192,7 @@ export default function MapComponent({ vehicles, stops, selectedVehicleId, onVeh
       ))}
 
       {/* Center map on selected vehicle */}
-      <MapCenterControl selectedVehicle={selectedVehicle} />
+      {selectedVehicle && <MapCenterControl selectedVehicle={selectedVehicle} />}
     </MapContainer>
   );
 } 

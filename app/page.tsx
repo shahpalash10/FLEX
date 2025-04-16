@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
+import Navbar from "../components/Navbar";
 
 // Chennai location data - popular areas and landmarks
 const CHENNAI_LOCATIONS = [
@@ -22,9 +23,6 @@ export default function Home() {
   const [searchOrigin, setSearchOrigin] = useState("");
   const [searchDestination, setSearchDestination] = useState("");
   const [currentTab, setCurrentTab] = useState("search");
-  
-  // Add mobile menu state
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   // Location suggestion states
   const [originSuggestions, setOriginSuggestions] = useState<string[]>([]);
@@ -123,11 +121,6 @@ export default function Home() {
     setShowDestinationSuggestions(false);
   };
 
-  // Toggle mobile menu
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     // This would navigate to the trip planner with the search params
@@ -137,93 +130,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navigation Bar */}
-      <header className="bg-black/30 backdrop-blur-md border-b border-white/10">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center space-x-2">
-                <div className="h-8 w-8 bg-gradient-to-br from-teal-500 to-purple-600 rounded-md flex items-center justify-center neon-border">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <span className="text-teal-400 text-2xl font-bold neon-text tracking-wider">FLEX</span>
-              </Link>
-            </div>
-            <div className="md:hidden">
-              <button 
-                className="p-2 text-teal-400 focus:outline-none"
-                aria-label="Toggle mobile menu"
-                onClick={toggleMobileMenu}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-            </div>
-            <div className="hidden md:flex items-center space-x-6">
-              <Link href="/trip-planner" className="nav-link">
-                Plan Route
-              </Link>
-              <Link href="/transport-map" className="nav-link">
-                Live Transit
-              </Link>
-              <Link href="/rides" className="nav-link">
-                Book Ride
-              </Link>
-              <Link href="/bookings" className="nav-link">
-                My Rides
-              </Link>
-              <Link href="/profile" className="btn-primary">
-                <span className="relative z-10">Profile</span>
-              </Link>
-            </div>
-          </div>
-          
-          {/* Mobile menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden mt-4 bg-gray-900/80 backdrop-blur-md rounded-lg p-4 border border-gray-800">
-              <div className="flex flex-col space-y-3">
-                <Link 
-                  href="/trip-planner" 
-                  className="block px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Plan Route
-                </Link>
-                <Link 
-                  href="/transport-map" 
-                  className="block px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Live Transit
-                </Link>
-                <Link 
-                  href="/rides" 
-                  className="block px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Book Ride
-                </Link>
-                <Link 
-                  href="/bookings" 
-                  className="block px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  My Rides
-                </Link>
-                <Link 
-                  href="/profile" 
-                  className="block px-3 py-2 rounded-md text-gray-300 hover:bg-gray-800"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Profile
-                </Link>
-              </div>
-            </div>
-          )}
-        </nav>
-      </header>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="flex-grow py-12 md:py-24 relative overflow-hidden">

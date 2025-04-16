@@ -1,25 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+import { useEffect, useRef } from 'react';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet-routing-machine';
+import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 
-// Fix for the default marker icon in Leaflet with Next.js
-const icon = L.icon({
-  iconUrl: '/marker-icon.png',
-  iconRetinaUrl: '/marker-icon-2x.png',
-  shadowUrl: '/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-// Default icon fallbacks to prevent errors
-L.Marker.prototype.options.icon = icon;
-
-// Types for the component props
+// Define the prop types for the component
 interface TrackingMapProps {
   pickup: { lat: number; lng: number };
   dropoff: { lat: number; lng: number };
@@ -27,100 +14,135 @@ interface TrackingMapProps {
   routePoints: { lat: number; lng: number }[];
 }
 
-// Component to center the map on driver position
-function DriverPositionFollower({ position }: { position: { lat: number; lng: number } }) {
-  const map = useMap();
-  
-  useEffect(() => {
-    map.setView([position.lat, position.lng], 15);
-  }, [map, position]);
-  
-  return null;
-}
+// Fix Leaflet icon issue with Next.js
+const fixLeafletIcons = () => {
+  // @ts-ignore - Leaflet has custom issues with Next.js
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+  });
+};
+
+// Custom icon for driver
+const createDriverIcon = () => {
+  return L.divIcon({
+    html: `<div class="h-6 w-6 bg-teal-400 border-2 border-white rounded-full flex items-center justify-center shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8" />
+            </svg>
+          </div>`,
+    className: '',
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+  });
+};
+
+// Custom icon for pickup and dropoff locations
+const createLocationIcon = (color: string) => {
+  return L.divIcon({
+    html: `<div class="h-6 w-6 bg-${color} border-2 border-white rounded-full flex items-center justify-center shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+            </svg>
+          </div>`,
+    className: '',
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+  });
+};
 
 export default function TrackingMap({ pickup, dropoff, driverPosition, routePoints }: TrackingMapProps) {
-  // Create custom icons
-  const pickupIcon = L.divIcon({
-    className: "custom-div-icon",
-    html: `<div class="h-4 w-4 rounded-full bg-teal-500 border-2 border-white"></div>`,
-    iconSize: [20, 20],
-    iconAnchor: [10, 10]
-  });
-  
-  const dropoffIcon = L.divIcon({
-    className: "custom-div-icon",
-    html: `<div class="h-4 w-4 rounded-full bg-purple-500 border-2 border-white"></div>`,
-    iconSize: [20, 20],
-    iconAnchor: [10, 10]
-  });
-  
-  const driverIcon = L.divIcon({
-    className: "custom-div-icon",
-    html: `<div class="h-6 w-6 rounded-full bg-amber-500 border-2 border-white flex items-center justify-center text-xs text-white font-bold">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-        <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-        <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1v-5h2a1 1 0 00.9-.5l1.5-2.5a1 1 0 00-.08-1.21 1 1 0 00-.82-.29H11v-1a1 1 0 00-1-1H3z" />
-      </svg>
-    </div>`,
-    iconSize: [30, 30],
-    iconAnchor: [15, 15]
-  });
+  const mapRef = useRef<L.Map | null>(null);
+  const driverMarkerRef = useRef<L.Marker | null>(null);
+  const routeLayerRef = useRef<L.Polyline | null>(null);
 
-  // Polyline options
-  const routeOptions = { 
-    color: 'rgba(45, 212, 191, 0.7)', 
-    weight: 4,
-    dashArray: '5, 10'
-  };
+  useEffect(() => {
+    // Initialize map only on client-side
+    fixLeafletIcons();
 
-  return (
-    <MapContainer 
-      center={[driverPosition.lat, driverPosition.lng]} 
-      zoom={14} 
-      style={{ height: '100%', width: '100%' }}
-      zoomControl={false}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      
-      {/* Pickup marker */}
-      <Marker 
-        position={[pickup.lat, pickup.lng]}
-        icon={pickupIcon}
-      >
-        <Popup>
-          <div className="font-medium">Pickup Location</div>
-        </Popup>
-      </Marker>
-      
-      {/* Dropoff marker */}
-      <Marker 
-        position={[dropoff.lat, dropoff.lng]}
-        icon={dropoffIcon}
-      >
-        <Popup>
-          <div className="font-medium">Dropoff Location</div>
-        </Popup>
-      </Marker>
-      
-      {/* Driver marker */}
-      <Marker 
-        position={[driverPosition.lat, driverPosition.lng]}
-        icon={driverIcon}
-      >
-        <Popup>
-          <div className="font-medium">Your Driver</div>
-          <div className="text-xs">On the way</div>
-        </Popup>
-      </Marker>
-      
-      {/* Route polyline */}
-      <Polyline positions={routePoints.map(point => [point.lat, point.lng])} pathOptions={routeOptions} />
-      
-      {/* Keep map centered on driver */}
-      <DriverPositionFollower position={driverPosition} />
-    </MapContainer>
-  );
+    // Initialize map if it doesn't exist
+    if (!mapRef.current) {
+      // Calculate the center point between pickup and dropoff
+      const center = {
+        lat: (pickup.lat + dropoff.lat) / 2,
+        lng: (pickup.lng + dropoff.lng) / 2
+      };
+
+      // Create map
+      mapRef.current = L.map('tracking-map', {
+        center: [center.lat, center.lng],
+        zoom: 13,
+        zoomControl: false,
+        attributionControl: false
+      });
+
+      // Add tile layer (dark theme)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(mapRef.current);
+
+      // Add pickup marker
+      L.marker([pickup.lat, pickup.lng], {
+        icon: createLocationIcon('green-500')
+      }).addTo(mapRef.current)
+        .bindTooltip('Pickup', { permanent: false, direction: 'top' });
+
+      // Add dropoff marker
+      L.marker([dropoff.lat, dropoff.lng], {
+        icon: createLocationIcon('purple-500')
+      }).addTo(mapRef.current)
+        .bindTooltip('Dropoff', { permanent: false, direction: 'top' });
+    }
+
+    // Update driver position
+    if (mapRef.current) {
+      // Remove previous driver marker if exists
+      if (driverMarkerRef.current) {
+        driverMarkerRef.current.remove();
+      }
+
+      // Add new driver marker
+      driverMarkerRef.current = L.marker([driverPosition.lat, driverPosition.lng], {
+        icon: createDriverIcon()
+      }).addTo(mapRef.current)
+        .bindTooltip('Driver', { permanent: false, direction: 'top' });
+
+      // Remove previous route if exists
+      if (routeLayerRef.current) {
+        routeLayerRef.current.remove();
+      }
+
+      // Draw route
+      if (routePoints && routePoints.length > 0) {
+        const latLngs = routePoints.map(point => L.latLng(point.lat, point.lng));
+        routeLayerRef.current = L.polyline(latLngs, {
+          color: '#2dd4bf',
+          weight: 5,
+          opacity: 0.7,
+          lineCap: 'round',
+          lineJoin: 'round',
+          dashArray: '10, 10'
+        }).addTo(mapRef.current);
+
+        // Fit map to route bounds
+        mapRef.current.fitBounds(routeLayerRef.current.getBounds(), {
+          padding: [30, 30]
+        });
+      }
+    }
+
+    // Cleanup function
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, [pickup, dropoff, driverPosition, routePoints]);
+
+  return <div id="tracking-map" className="h-full w-full z-0"></div>;
 } 

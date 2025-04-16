@@ -8,20 +8,20 @@ import Navbar from "../../components/Navbar";
 
 // Mock data for transport vehicles
 const TRANSPORT_VEHICLES = [
-  { id: 1, type: "bus", number: "B101", route: "Downtown - North Square", lat: 40.7128, lng: -74.006, speed: 25, direction: 45, status: "on-time", nextStop: "Central Park South", nextStopTime: "14:35", capacity: 75, currentCapacity: 40 },
-  { id: 2, type: "bus", number: "B205", route: "Uptown Express", lat: 40.7230, lng: -73.9949, speed: 18, direction: 120, status: "delayed", nextStop: "Grand Central", nextStopTime: "14:42", capacity: 60, currentCapacity: 55 },
-  { id: 3, type: "metro", number: "M2", route: "Blue Line", lat: 40.7300, lng: -74.0100, speed: 40, direction: 90, status: "on-time", nextStop: "Union Square", nextStopTime: "14:32", capacity: 200, currentCapacity: 180 },
-  { id: 4, type: "metro", number: "M5", route: "Green Line", lat: 40.7350, lng: -73.9900, speed: 35, direction: 270, status: "on-time", nextStop: "Times Square", nextStopTime: "14:30", capacity: 180, currentCapacity: 120 },
-  { id: 5, type: "train", number: "T3", route: "Express Regional", lat: 40.7500, lng: -74.0050, speed: 80, direction: 180, status: "delayed", nextStop: "Penn Station", nextStopTime: "14:45", capacity: 350, currentCapacity: 290 }
+  { id: 1, type: "bus", number: "B101", route: "Central - T Nagar", lat: 13.0827, lng: 80.2707, speed: 25, direction: 45, status: "on-time", nextStop: "Egmore", nextStopTime: "14:35", capacity: 75, currentCapacity: 40 },
+  { id: 2, type: "bus", number: "B205", route: "Adyar Express", lat: 13.0098, lng: 80.2538, speed: 18, direction: 120, status: "delayed", nextStop: "Saidapet", nextStopTime: "14:42", capacity: 60, currentCapacity: 55 },
+  { id: 3, type: "metro", number: "M2", route: "Blue Line", lat: 13.0569, lng: 80.2425, speed: 40, direction: 90, status: "on-time", nextStop: "Anna Nagar", nextStopTime: "14:32", capacity: 200, currentCapacity: 180 },
+  { id: 4, type: "metro", number: "M5", route: "Green Line", lat: 13.0543, lng: 80.2650, speed: 35, direction: 270, status: "on-time", nextStop: "Vadapalani", nextStopTime: "14:30", capacity: 180, currentCapacity: 120 },
+  { id: 5, type: "train", number: "T3", route: "Express Regional", lat: 13.0660, lng: 80.2611, speed: 80, direction: 180, status: "delayed", nextStop: "Chennai Beach", nextStopTime: "14:45", capacity: 350, currentCapacity: 290 }
 ];
 
 // Mock data for transport stops
 const TRANSPORT_STOPS = [
-  { id: 1, name: "Central Station", type: "multimodal", lat: 40.7128, lng: -74.006, lines: ["B101", "B205", "M2", "T3"] },
-  { id: 2, name: "North Square", type: "bus", lat: 40.7230, lng: -73.9949, lines: ["B101"] },
-  { id: 3, name: "Union Square", type: "metro", lat: 40.7300, lng: -74.0100, lines: ["M2", "M5"] },
-  { id: 4, name: "Business Park", type: "bus", lat: 40.7350, lng: -73.9900, lines: ["B205"] },
-  { id: 5, name: "Penn Station", type: "train", lat: 40.7500, lng: -74.0050, lines: ["T3"] }
+  { id: 1, name: "Chennai Central", type: "multimodal", lat: 13.0827, lng: 80.2707, lines: ["B101", "B205", "M2", "T3"] },
+  { id: 2, name: "T Nagar", type: "bus", lat: 13.0400, lng: 80.2339, lines: ["B101"] },
+  { id: 3, name: "Anna Nagar", type: "metro", lat: 13.0569, lng: 80.2425, lines: ["M2", "M5"] },
+  { id: 4, name: "Adyar", type: "bus", lat: 13.0098, lng: 80.2538, lines: ["B205"] },
+  { id: 5, name: "Chennai Beach", type: "train", lat: 13.0660, lng: 80.2611, lines: ["T3"] }
 ];
 
 // Dynamically import the Map component to avoid SSR issues with Leaflet
@@ -320,7 +320,7 @@ export default function TransportMap() {
                     <div className="space-y-2">
                       <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border-l-4 border-green-500">
                         <p className="text-sm">
-                          Vehicle departed from Downtown Station at 14:15
+                          Vehicle departed from Chennai Central at 14:15
                         </p>
                       </div>
                       <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border-l-4 border-blue-500">

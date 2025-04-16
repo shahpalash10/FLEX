@@ -44,7 +44,7 @@ const RIDE_DATA = {
 };
 
 // Dynamically import the Map component to avoid SSR issues with Leaflet
-const TrackingMap = dynamic(() => import('@/components/TrackingMap'), {
+const TrackingMapComponent = dynamic(() => import('../../components/TrackingMap'), {
   ssr: false,
   loading: () => (
     <div className="h-[300px] w-full bg-gray-900/50 backdrop-blur-sm animate-pulse flex items-center justify-center rounded-lg">
@@ -53,7 +53,7 @@ const TrackingMap = dynamic(() => import('@/components/TrackingMap'), {
   )
 });
 
-export default function RideTracking() {
+function RideTrackingContent() {
   const [ride, setRide] = useState(RIDE_DATA);
   const [remainingTime, setRemainingTime] = useState("");
   const [isSimulating, setIsSimulating] = useState(true);
@@ -155,8 +155,7 @@ export default function RideTracking() {
   };
 
   return (
-    <PageTransition>
-      <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Navigation Bar */}
       <header className="bg-black/30 backdrop-blur-md border-b border-white/10">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -353,7 +352,7 @@ export default function RideTracking() {
           <div className="cyber-card overflow-hidden">
             <h3 className="text-lg font-bold mb-4">Live Tracking</h3>
             <div className="h-[300px] w-full relative rounded-lg overflow-hidden">
-              <TrackingMap 
+              <TrackingMapComponent 
                 pickup={ride.route.points[1]}
                 dropoff={ride.route.points[ride.route.points.length-1]}
                 driverPosition={ride.route.driverPosition}
@@ -397,6 +396,13 @@ export default function RideTracking() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function RideTracking() {
+  return (
+    <PageTransition>
+      <RideTrackingContent />
     </PageTransition>
   );
 } 
